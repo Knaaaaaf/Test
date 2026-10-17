@@ -1,0 +1,11 @@
+{
+  "name": "sigma",
+  "short_name": "sigma",
+  "description": "Minimalistyczny player muzyki Sigma",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#08090d",
+  "theme_color": "#08090d",
+  "icons": []
+}
