@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#08090d">
+<meta name="description" content="SIGMA — minimalistyczny player muzyki na telefon.">
+<link rel="manifest" href="manifest.json">
+<title>sigma</title>
+<style>
+:root{color-scheme:dark;--lime:#c7ff3d;--bg:#08090d;--muted:#9295a1}
+*{box-sizing:border-box}body{margin:0;min-height:100svh;background:radial-gradient(ellipse at 50% 35%,#20252a 0%,#0c0e13 42%,var(--bg) 75%);color:#fff;font-family:Inter,ui-sans-serif,system-ui,-apple-system,sans-serif;display:grid;place-items:center;overflow:hidden}
+main{width:min(100%,440px);min-height:100svh;padding:calc(30px + env(safe-area-inset-top)) 26px calc(26px + env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:center;justify-content:space-between;text-align:center}
+.top{width:100%;display:flex;justify-content:space-between;align-items:center;font-size:11px;letter-spacing:.22em;color:var(--muted);text-transform:uppercase}.dot{width:7px;height:7px;border-radius:50%;background:var(--lime);display:inline-block;margin-right:7px;box-shadow:0 0 13px #c7ff3d}
+.center{width:100%;display:flex;flex-direction:column;align-items:center;gap:22px}.orb{width:min(65vw,245px);aspect-ratio:1;border-radius:50%;position:relative;display:grid;place-items:center;background:radial-gradient(circle at 35% 25%,#3a4149,#171a20 42%,#090a0d 72%);box-shadow:inset 0 0 35px #ffffff0a,0 0 80px #c7ff3d0b;border:1px solid #ffffff13}.orb:before,.orb:after{content:"";position:absolute;inset:13px;border:1px solid #c7ff3d32;border-radius:50%;animation:spin 14s linear infinite}.orb:after{inset:27px;border-color:#ffffff19;animation-direction:reverse;animation-duration:20s}.sigil{font-size:clamp(70px,20vw,100px);font-weight:950;letter-spacing:-.12em;transform:translateX(-5px);color:#f5f6f2;text-shadow:0 0 35px #c7ff3d18}.brand{font-size:clamp(54px,15vw,78px);font-weight:950;letter-spacing:.14em;margin-right:-.14em;line-height:1}.sub{font-size:11px;letter-spacing:.34em;color:var(--muted);text-transform:uppercase}.bars{height:25px;display:flex;align-items:center;gap:4px}.bars i{display:block;width:3px;height:5px;background:var(--lime);border-radius:4px;opacity:.65}.playing .bars i{animation:wave .7s ease-in-out infinite alternate}.playing .bars i:nth-child(2n){animation-delay:-.3s}.playing .bars i:nth-child(3n){animation-delay:-.5s}.controls{width:100%;display:flex;flex-direction:column;gap:17px}.play{border:0;border-radius:18px;padding:18px 20px;background:var(--lime);color:#11140a;font-weight:850;letter-spacing:.12em;font-size:13px;cursor:pointer;box-shadow:0 8px 35px #c7ff3d18}.play:active{transform:scale(.98)}.hint{font-size:12px;line-height:1.6;color:var(--muted);margin:0}.upload{font-size:12px;color:#d8d9de;text-decoration:underline;text-underline-offset:4px;cursor:pointer}.foot{font-size:10px;letter-spacing:.2em;color:#555965;text-transform:uppercase}@keyframes spin{to{transform:rotate(360deg)}}@keyframes wave{to{height:22px;opacity:1}}@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important}}
+</style>
+</head>
+<body><main id="app">
+<div class="top"><span><i class="dot"></i>system online</span><span>vol. 001</span></div>
+<section class="center">
+<div class="orb"><div class="sigil">σ</div></div>
+<div class="brand">sigma</div><div class="sub">stay in your lane</div>
+<div class="bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+</section>
+<section class="controls">
+<button class="play" id="play" type="button">▶ &nbsp; ODPAL MUZYKĘ</button>
+<p class="hint" id="hint">Kliknij, aby uruchomić odtwarzanie. Możesz też wybrać swój plik audio.</p>
+<label class="upload" for="audioFile">＋ Wybierz plik muzyczny z telefonu</label>
+<input id="audioFile" type="file" accept="audio/*" hidden>
+<audio id="audio" loop></audio>
+</section>
+<div class="foot">made for mobile · sigma</div>
+</main>
+<script>
+const app=document.querySelector('#app'),audio=document.querySelector('#audio'),play=document.querySelector('#play'),file=document.querySelector('#audioFile'),hint=document.querySelector('#hint');
+play.addEventListener('click',async()=>{if(!audio.src){hint.textContent='Najpierw wybierz plik audio z telefonu — przeglądarka nie pozwala bezpiecznie odtworzyć nieznanego utworu automatycznie.';file.click();return}if(audio.paused){try{await audio.play();app.classList.add('playing');play.innerHTML='Ⅱ &nbsp; PAUZA';hint.textContent='Muzyka gra. Sigma mode: ON.'}catch{hint.textContent='Nie udało się odtworzyć pliku. Wybierz go ponownie.'}}else{audio.pause();app.classList.remove('playing');play.innerHTML='▶ &nbsp; ODPAL MUZYKĘ';hint.textContent='Odtwarzanie wstrzymane.'}});
+file.addEventListener('change',()=>{const f=file.files&&file.files[0];if(!f)return;audio.src=URL.createObjectURL(f);audio.play().then(()=>{app.classList.add('playing');play.innerHTML='Ⅱ &nbsp; PAUZA';hint.textContent='Teraz gra: '+f.name}).catch(()=>{hint.textContent='Plik gotowy. Kliknij ODPAL MUZYKĘ.'})});
+if('serviceWorker'in navigator && location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+</script>
+</body></html>
